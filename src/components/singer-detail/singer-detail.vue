@@ -1,18 +1,61 @@
 <template>
   <transition name="slide">
-    <div class="singer-detail"></div>
+    <music-list :songs="songs" :title="title" :bg-image="bgImage"></music-list>
   </transition>
 </template>
 <script>
   import {mapGetters} from 'vuex'
+  import {singerDetail} from '@/api/singer'
+  import {createSong} from '@/common/js/song'
+  import MusicList from '@/components/music-list/music-list'
   export default{
+    data () {
+      return {
+        songs: []
+      }
+    },
     computed: {
+      title () {
+        return this.singer.name
+      },
+      bgImage () {
+        return this.singer.avatar
+      },
       ...mapGetters([
         'singer'
       ])
     },
     created () {
-      console.log(this.singer)
+      if (!this.singer.id) {
+        this.$router.push('/singer')
+        return
+      }
+      this._getSingerDetail(this.singer.id)
+    },
+    methods: {
+      // 获取歌手详情
+      _getSingerDetail (singerId) {
+        this.$http.jsonp(singerDetail(singerId), {jsonp: 'jsonpCallback'}).then((res) => {
+          this.songs = this._normalizeSongs(res.data.data.list)
+          console.log(this.songs)
+        }, (err) => {
+          console.log(err)
+        })
+      },
+      // 获取歌手的歌单
+      _normalizeSongs (list) {
+        let ret = []
+        list.forEach((item) => {
+          let {musicData} = item
+          if (musicData.songid && musicData.songmid) {
+            ret.push(createSong(musicData))
+          }
+        })
+        return ret
+      }
+    },
+    components: {
+      MusicList
     }
   }
 </script>
