@@ -39,7 +39,9 @@ import {picUrl, getDiscList} from '@/api/recommend'
 import Loading from '@/base/loading/loading'
 import Slider from '@/base/slider/slider'
 import Scroll from '@/base/scroll/scroll'
+import {playListMixin} from '@/common/js/mixin'
 export default {
+  mixins: [playListMixin],
   data () {
     return {
       recommends: [],
@@ -58,6 +60,11 @@ export default {
     Loading
   },
   methods: {
+    handlePlayList (playList) {
+      const bottom = playList.length > 0 ? '60px' : ''
+      this.$refs.recommend.style.bottom = bottom
+      this.$refs.scroll.refresh()
+    },
     _getRecommend () {
       this.$http.jsonp(picUrl(), {jsonp: 'jsonpCallback'}).then((res) => {
         this.recommends = res.data.data.slider
