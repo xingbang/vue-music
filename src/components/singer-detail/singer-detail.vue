@@ -6,6 +6,7 @@
 <script>
   import {mapGetters} from 'vuex'
   import {singerDetail} from '@/api/singer'
+  import {getSongUrl} from '@/api/song'
   import {createSong} from '@/common/js/song'
   import MusicList from '@/components/music-list/music-list'
   export default{
@@ -37,7 +38,7 @@
       _getSingerDetail (singerId) {
         this.$http.jsonp(singerDetail(singerId), {jsonp: 'jsonpCallback'}).then((res) => {
           this.songs = this._normalizeSongs(res.data.data.list)
-          console.log(this.songs)
+          // console.log(res.data)
         }, (err) => {
           console.log(err)
         })
@@ -45,10 +46,14 @@
       // 获取歌手的歌单
       _normalizeSongs (list) {
         let ret = []
-        list.forEach((item) => {
+        list.forEach((item, index) => {
           let {musicData} = item
           if (musicData.songid && musicData.songmid) {
             ret.push(createSong(musicData))
+            getSongUrl(musicData.songmid).then((res) => {
+              let data = res.data.items[0]
+              ret[index].url = `http://dl.stream.qqmusic.qq.com/${data.filename}?vkey=${data.vkey}&guid=8421138817&uin=0&fromtag=66`
+            })
           }
         })
         return ret

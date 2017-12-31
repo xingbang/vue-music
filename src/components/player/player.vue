@@ -51,7 +51,7 @@
           <div class="progress-wrapper">
             <span class="time time-l">{{format(currentTime)}}</span>
             <div class="progress-bar-wrapper">
-              <progress-bar :percent="percent" @percentChange="progressChange"></progress-bar>
+              <progress-bar :percent="percent" @percentChange="progressChange" ref="progressBar"></progress-bar>
             </div>
             <span class="time time-r">{{format(currentSong.duration)}}</span>
           </div>
@@ -198,6 +198,7 @@ export default {
       this.$refs.cdWrapper.style.transform = ''
     },
     togglePlaying () {
+      // this.$refs.progressBar.percent = 0
       if (!this.songReady) {
         return
       }
@@ -419,7 +420,7 @@ export default {
       setTimeout(() => {
         this.$refs.audio.play()
         this.getLyric()
-      }, 1000)
+      }, 100)
     },
     playing (newPlaying) {
       const audio = this.$refs.audio

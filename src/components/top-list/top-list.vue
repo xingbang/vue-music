@@ -1,48 +1,57 @@
 <template>
   <transition name="slide">
-    <music-list :title="title" :bg-image="bgImage" :songs="songs"></music-list>
+    <music-list :rank="rank" :songs="songs" :title="title" :bg-image="bgImage"></music-list>
   </transition>
 </template>
 <script>
   import MusicList from '@/components/music-list/music-list'
-  import {getSongList} from '@/api/recommend'
   import {mapGetters} from 'vuex'
+  import {getMusicUrl} from '@/api/rank'
   import {createSong} from '@/common/js/song'
   import {getSongUrl} from '@/api/song'
-  export default {
+  export default{
     data () {
       return {
-        songs: []
+        songs: [],
+        rank: true
       }
     },
     computed: {
       title () {
-        return this.disc.dissname
+        return this.topList.topTitle
       },
       bgImage () {
-        return this.disc.imgurl
+        if (this.songs.length) {
+          return this.songs[0].image
+        }
+        return ''
       },
       ...mapGetters([
-        'disc'
+        'topList'
       ])
     },
     created () {
-      if (!this.disc.dissid) {
-        this.$router.push('/recommend')
+      if (!this.topList.id) {
+        this.$router.push('/rank')
         return
       }
-      this._getSongList()
+      setTimeout(() => {
+        this._rankMusicList()
+      }, 1000)
     },
     methods: {
-      _getSongList () {
-        getSongList(this.disc.dissid).then((res) => {
-          this.songs = this._nomalSongs(res.cdlist[0].songlist)
-          console.log(this.songs)
+      _rankMusicList () {
+        this.$http.jsonp(getMusicUrl(this.topList.id), {jsonp: 'jsonpCallback'}).then((res) => {
+          // console.log(res.data)
+          this.songs = this._nomalSongs(res.data.songlist)
+        }, (err) => {
+          console.log(err)
         })
       },
       _nomalSongs (list) {
         let ret = []
-        list.forEach((musicData, index) => {
+        list.forEach((item, index) => {
+          const musicData = item.data
           if (musicData.songid && musicData.albumid) {
             ret.push(createSong(musicData))
             getSongUrl(musicData.songmid).then((res) => {
@@ -60,8 +69,9 @@
   }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
-  .slide-enter-active,.slide-leave-active
-    transition: all 0.3s
-  .slide-enter,.slide-leave-to
-    transform: translate3d(100%,0,0)
+@import "../../common/stylus/variable.styl"
+.slide-enter-active,.slide-leave-active
+  transition: all 0.3s
+.slide-enter,.slide-leave-to
+  transform: translate3d(100%,0,0)
 </style>
