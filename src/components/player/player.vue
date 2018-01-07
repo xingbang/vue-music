@@ -198,7 +198,6 @@ export default {
       this.$refs.cdWrapper.style.transform = ''
     },
     togglePlaying () {
-      // this.$refs.progressBar.percent = 0
       if (!this.songReady) {
         return
       }
@@ -248,6 +247,7 @@ export default {
       }
       if (this.playList.length === 1) {
         this.loop()
+        return
       } else {
         let index = this.currentIndex + 1
         if (index === this.playList.length) {
@@ -267,6 +267,7 @@ export default {
       }
       if (this.playList.length === 1) {
         this.loop()
+        return
       } else {
         let index = this.currentIndex - 1
         if (index === -1) {
