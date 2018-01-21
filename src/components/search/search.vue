@@ -41,10 +41,10 @@
   import Confirm from '@/base/confirm/confirm'
   import Scroll from '@/base/scroll/scroll'
   import {searchUrl} from '@/api/search'
-  import {playListMixin} from '@/common/js/mixin'
-  import {mapActions, mapGetters} from 'vuex'
+  import {playListMixin, searchMixin} from '@/common/js/mixin'
+  import {mapActions} from 'vuex'
   export default {
-    mixins: [playListMixin],
+    mixins: [playListMixin, searchMixin],
     components: {
       SearchBox,
       Suggest,
@@ -54,8 +54,7 @@
     },
     data () {
       return {
-        hotKey: [],
-        query: ''
+        hotKey: []
       }
     },
     created () {
@@ -74,10 +73,7 @@
     computed: {
       shortcut () {
         return this.hotKey.concat(this.searchHistory)
-      },
-      ...mapGetters([
-        'searchHistory'
-      ])
+      }
     },
     methods: {
       handlePlayList (playList) {
@@ -87,28 +83,12 @@
         this.$refs.shortcut.refresh()
         this.$refs.suggest.refresh()
       },
-      onChangeQuery (query) {
-        this.query = query
-      },
       _getHotKey () {
         this.$http.jsonp(searchUrl(), {jsonp: 'jsonpCallback'}).then((res) => {
           this.hotKey = res.data.data.hotkey.slice(0, 10)
         }, (err) => {
           console.log(err)
         })
-      },
-      addQuery (query) {
-        this.$refs.searchBox.setQuery(query)
-      },
-      blurInput () {
-        this.$refs.searchBox.blur()
-      },
-      // 保存搜索历史
-      saveSearch () {
-        this.saveSearchHistory(this.query)
-      },
-      deleteOne (item) {
-        this.deleteSearchHistory(item)
       },
       deleteAll () {
         this.clearSearchHistory()
@@ -117,8 +97,6 @@
         this.$refs.confirm.show()
       },
       ...mapActions([
-        'saveSearchHistory',
-        'deleteSearchHistory',
         'clearSearchHistory'
       ])
     }

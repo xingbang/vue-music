@@ -33,6 +33,10 @@
       beforeScroll: {
         type: Boolean,
         default: false
+      },
+      timeDe: {
+        type: Number,
+        dafault: 20
       }
     },
 
@@ -90,7 +94,7 @@
       data () {
         setTimeout(() => {
           this.refresh()
-        }, 20)
+        }, this.timeDe)
       }
     }
   }

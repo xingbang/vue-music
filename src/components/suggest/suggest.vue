@@ -41,8 +41,8 @@ export default {
       default: ''
     },
     showSinger: {
-      type: Boolean,
-      default: true
+      type: Number,
+      default: 1
     }
   },
   data () {
@@ -60,7 +60,7 @@ export default {
       this.page = 1
       this.hasMore = true
       this.$refs.suggest.scrollTo(0, 0)
-      this.$http.jsonp(suggestUrl(this.query, this.page, 1, perpage), {jsonp: 'jsonpCallback'}).then((res) => {
+      this.$http.jsonp(suggestUrl(this.query, this.page, this.showSinger, perpage), {jsonp: 'jsonpCallback'}).then((res) => {
         this.result = this._getResult(res.data.data)
         this._checkMore(res.data.data)
       }, (err) => {
@@ -73,7 +73,7 @@ export default {
         return
       }
       this.page++
-      this.$http.jsonp(suggestUrl(this.query, this.page, 1, perpage), {jsonp: 'jsonpCallback'}).then((res) => {
+      this.$http.jsonp(suggestUrl(this.query, this.page, this.showSinger, perpage), {jsonp: 'jsonpCallback'}).then((res) => {
         this.result = this.result.concat(this._getResult(res.data.data))
         this._checkMore(res.data.data)
         console.log(this.result)
