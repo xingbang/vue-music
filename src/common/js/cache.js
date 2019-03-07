@@ -123,7 +123,7 @@ export function saveFav (song) {
   return songs
 }
 
-export function deletaFav (song) {
+export function deleteFav (song) {
   let songs
   if (!localStorage.getItem(FAV_KEY)) {
     songs = []
